@@ -1,4 +1,4 @@
-# Membership Inference Attacks on Sequence-to-Sequence Models: Is My Data In Your Machine Translation System? (reproducere atac)
+# Membership Inference Attacks on Sequence-to-Sequence Models: Is My Data In Your Machine Translation System?
 
 ## Echipa
 
