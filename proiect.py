@@ -125,7 +125,7 @@ def predict_sequence(model, tokenizer, source):
         target.append(word)
     return ' '.join(target)
 
-def evaluate_model(model, tokenizer, sources, raw_dataset):
+def evaluate_model(model, eng_tokenizer, sources, raw_dataset):
     actual, predicted = list(), list()
     for i, source in enumerate(sources):
         # translate encoded source text
@@ -154,12 +154,14 @@ def main():
     save_clean_data(clean_pair, 'english-german.pkl')
     raw_dataset = load_clean_sentences('english-german.pkl')
     # reduce dataset size
-    n_sentences = 30000
+    n_sentences = int(len(raw_dataset) / 3)
     dataset = raw_dataset[:n_sentences, :]
     # random shuffle
     shuffle(dataset)
     # split into train/test
-    train, test = dataset[:27000], dataset[27001:n_sentences]
+    train_limit = int(n_sentences*0.8)
+
+    train, test = dataset[:train_limit], dataset[train_limit:n_sentences]
     # save
     save_clean_data(dataset, 'english-german-both.pkl')
     save_clean_data(train, 'english-german-train.pkl')
@@ -198,10 +200,10 @@ def main():
     # fit model
     filename = 'model.h5'
     checkpoint = ModelCheckpoint(filename, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
-    model.fit(trainX, trainY, epochs=35, batch_size=128, validation_data=(testX, testY), callbacks=[checkpoint], verbose=2)
+    model.fit(trainX, trainY, epochs=35, batch_size=64, validation_data=(testX, testY), callbacks=[checkpoint], verbose=2)
     model = load_model('model.h5')
-    evaluate_model(model, eng_tokenizer, testX, test)
-    evaluate_model(model, eng_tokenizer, trainX, train)
+    #evaluate_model(model, eng_tokenizer, testX, test)
+    #evaluate_model(model, eng_tokenizer, trainX, train)
 
 if __name__ == '__main__':
     main()
