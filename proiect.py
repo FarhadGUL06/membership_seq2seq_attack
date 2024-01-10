@@ -149,9 +149,9 @@ def main():
     # split into english-german pairs
     pairs = to_pairs(doc)
     # clean sentences
-    clean_pairs = clean_pairs(pairs)
+    clean_pair = clean_pairs(pairs)
     # save clean pairs to file
-    save_clean_data(clean_pairs, 'english-german.pkl')
+    save_clean_data(clean_pair, 'english-german.pkl')
     raw_dataset = load_clean_sentences('english-german.pkl')
     # reduce dataset size
     n_sentences = 30000
@@ -190,7 +190,7 @@ def main():
     testY = encode_output(testY, eng_vocab_size)
     # define model
     model = define_model(ger_vocab_size, eng_vocab_size, ger_length, eng_length, 256)
-    model.load_weights('model.h5')
+    #model.load_weights('model.h5')
 
     model.compile(optimizer='adam', loss='categorical_crossentropy')
     # summarize defined model
