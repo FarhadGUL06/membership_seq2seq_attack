@@ -58,6 +58,16 @@ Semnificația acurateții modelului de clasificare binară este următoarea:  da
 Dacă acuratețea este cu mult peste 50%, atunci putem determina dacă un anumit sample a fost sau nu folosit în cadrul procesului de antrenare și deci avem o breșă de securitate în modelul de traducere, în contradicție totală cu ipoteza noastră.
 Mai este și cazul în care se obține o acuratețe de sub 50%, doar că acest caz duce modelul de clasificare binară într-o poziție în care nu are rata de predicție deloc relevantă, și astfel orice observație obținută de pe urma acestuia este nulă.
 
+### Antrenare pe cluster
+
+```
+srun -p xl --gres gpu:2 -A student --cpus-per-task=8 --mem-per-cpu=16G --time 0-23 --pty /bin/bash
+
+singularity run --nv docker://tensorflow/tensorflow:latest-gpu
+
+
+```
+
 ### Model traducere 1: 
 
 - Training set: 38000

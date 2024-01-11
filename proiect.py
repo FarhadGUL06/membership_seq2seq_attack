@@ -125,23 +125,6 @@ def predict_sequence(model, tokenizer, source):
         target.append(word)
     return ' '.join(target)
 
-def evaluate_model(model, eng_tokenizer, sources, raw_dataset):
-    actual, predicted = list(), list()
-    for i, source in enumerate(sources):
-        # translate encoded source text
-        source = source.reshape((1, source.shape[0]))
-        translation = predict_sequence(model, eng_tokenizer, source)
-        raw_target, raw_src = raw_dataset[i]
-        if i < 10:
-            print('src=[%s], target=[%s], predicted=[%s]' % (raw_src, raw_target, translation))
-        actual.append([raw_target.split()])
-        predicted.append(translation.split())
-    # calculate BLEU score
-    print('BLEU-1: %f' % corpus_bleu(actual, predicted, weights=(1.0, 0, 0, 0)))
-    print('BLEU-2: %f' % corpus_bleu(actual, predicted, weights=(0.5, 0.5, 0, 0)))
-    print('BLEU-3: %f' % corpus_bleu(actual, predicted, weights=(0.3, 0.3, 0.3, 0)))
-    print('BLEU-4: %f' % corpus_bleu(actual, predicted, weights=(0.25, 0.25, 0.25, 0.25)))
-
 def main():
     # load dataset
     filename = 'deu.txt'
@@ -154,13 +137,16 @@ def main():
     save_clean_data(clean_pair, 'english-german.pkl')
     raw_dataset = load_clean_sentences('english-german.pkl')
     # reduce dataset size
-    n_sentences = int(len(raw_dataset) / 3)
+    n_sentences = int(len(raw_dataset) / 3)   
     dataset = raw_dataset[:n_sentences, :]
     # random shuffle
     shuffle(dataset)
+
+    # Save dataset
+    save_clean_data(dataset, 'english-german-clean.pkl')
     # split into train/test
     train_limit = int(n_sentences*0.8)
-
+    
     train, test = dataset[:train_limit], dataset[train_limit:n_sentences]
     # save
     save_clean_data(dataset, 'english-german-both.pkl')
@@ -202,8 +188,6 @@ def main():
     checkpoint = ModelCheckpoint(filename, monitor='val_loss', verbose=1, save_best_only=True, mode='min')
     model.fit(trainX, trainY, epochs=35, batch_size=64, validation_data=(testX, testY), callbacks=[checkpoint], verbose=2)
     model = load_model('model.h5')
-    #evaluate_model(model, eng_tokenizer, testX, test)
-    #evaluate_model(model, eng_tokenizer, trainX, train)
 
 if __name__ == '__main__':
     main()
